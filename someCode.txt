@@ -1,0 +1,12 @@
+def calculateProfit(y_predict_norm):
+    y_oneHot = tf.arg_min(y_predict_norm, 1)
+    y_oneHot = tf.reshape(y_oneHot,[-1,1])
+    #return 0, y_predict_norm
+    totalTrade =  tf.reduce_sum(tf.cast(y_oneHot, tf.float16))
+    profit = 0
+    priceDiff = np.zeros([1,dataSet.test.data.shape[0]])
+    for i in range(dataSet.test.label.shape[0] - futureLength):
+        priceDiff[0,i] = dataSet.test.data[i + futureLength, historyLength -1, 3] - dataSet.test.data[i, historyLength -1, 3]
+    profit = tf.reduce_sum(tf.matmul(priceDiff, tf.cast(y_oneHot,dtype=tf.float64)))
+    return totalTrade, profit
+profit = calculateProfit(y_predict_norm)
